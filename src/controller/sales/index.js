@@ -65,15 +65,9 @@ const salesController = {
   createSales: async (req, res) => {
     try {
       const payload = req.body;
-      const sale = new SalesModel();
+      const sale = await SalesModel.create({ totalAmount: 0 }); // Save sale first to generate id
       const salesProduct = [];
-
-
-
       console.log("request", payload);
-
-
-
 
       for (let index = 0; index < payload.salesProducts.length; index++) {
         const ele = payload.salesProducts[index];
@@ -94,7 +88,7 @@ const salesController = {
         salesProduct.push({
           ...ele,
           price: product.price,
-          SaleId: sale.id,
+          SaleId: sale.id, // Assign the SaleId
         });
       }
 
@@ -104,8 +98,8 @@ const salesController = {
       }, 0);
 
       sale.totalAmount = totalAmount;
-
       await sale.save();
+
       for (const sp of salesProduct) {
         const product = await ProductModel.findByPk(sp.ProductId);
         product.stock -= sp.productQuantity;
@@ -117,9 +111,6 @@ const salesController = {
       console.log(error);
       res.status(500).json({ message: "Internal server error" });
     }
-
-
-
   },
 
 

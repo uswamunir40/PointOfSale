@@ -48,6 +48,62 @@ const ProductController = {
       res.status(500).json({ message: "Internal server error" });
     }
   },
+  update: async (req, res) => {
+    try {
+      const { id } = req.params;
+      const payload = req.body;
+      const product = await ProductModel.findByPk(id);
+      if (!product) {
+        res.status(404).json({ message: "product not found" });
+      }
+      if (payload.name) {
+        product.name = payload.firstName
+      }
+
+      if (product.price) {
+        product.price = payload.price;
+      }
+      if (product.stock) {
+        product.stock = payload.stock;
+      }
+
+      await product.save();
+
+
+
+      console.log("updatedData is ", payload);
+      res.status(200).json({ message: "product updated", data: product });
+
+
+    }
+
+    catch (error) {
+      res.status(500).json({ message: "Internal Server Error" });
+    }
+  },
+
+
+  delete: async (req, res) => {
+    try {
+      const { id } = req.params;
+
+      const product = await ProductModel.findByPk(id);
+      if (!product) {
+        res.status(404).json({ message: "product not found" });
+      }
+
+      await product.destroy();
+
+
+      console.log(`product with id ${id} is deleted `);
+      res.status(200).json({ message: `product with id ${id} is deleted `, product });
+
+    } catch (error) {
+      console.log(error);
+      res.status(500).json({ message: "Internal Server Error" });
+    }
+
+  }
 };
 
 export default ProductController;
